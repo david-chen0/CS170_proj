@@ -1,5 +1,7 @@
 # CS 170 Project Spring 2021
 
+This is David Chen's CS 170 Project for Spring 2021.
+
 Take a look at the project spec before you get started!
 
 Requirements:
