@@ -14,18 +14,17 @@ def createInput(V, k, c):
 	for num in range(V):
 		i = 0
 		while i < 2:
-			end = randint(0, V - 1)
+			end = random.randint(0, V - 1)
 			if end != num:
-				print(num + " " + end + " " + randint(1, 100))
-				i++
+				print("{} {} {}".format(num, end, random.randint(1, 100)))
+				i += 1
 
 	#Now add some extra edges
-	numEdges = randint(1, 20)
-
+	numEdges = random.randint(1, V // 2)
 	i = 0
 	while i < numEdges:
-		start = randint(0, V - 1)
-		end = randint(0, V - 1)
+		start = random.randint(0, V - 1)
+		end = random.randint(0, V - 1)
 		if start != end:
-			print(start + " " + end + " " + randint(1, 100))
-			i++
+			print("{} {} {}".format(start, end, random.randint(1, 100)))
+			i += 1
