@@ -21,7 +21,7 @@ def createInput(V, k, c):
 			if end != num and end not in lst[num]:
 				lst[num].append(end)
 				lst[end].append(num)
-				print("{} {} {}".format(num, end, random.randint(1, 100)))
+				print("{} {} {}".format(num, end, random.randint(1, 99)))
 				i += 1
 
 	#Now add some extra edges
@@ -33,7 +33,5 @@ def createInput(V, k, c):
 		if start != end and end not in lst[start]:
 			lst[start].append(end)
 			lst[end].append(start)
-			print("{} {} {}".format(start, end, random.randint(1, 100)))
+			print("{} {} {}".format(start, end, random.randint(1, 99)))
 			i += 1
-
-createInput(30, 1, 1)
