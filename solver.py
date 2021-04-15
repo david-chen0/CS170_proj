@@ -14,7 +14,44 @@ def solve(G):
         c: list of cities to remove
         k: list of edges to remove
     """
-    pass
+    #First find the best c cities to remove(if none helpful then move on)
+    #then find best k edges to remove
+
+    C = 1 #Number of cities to remove
+    K = 15 #Number of edges to remove
+
+    #Returns the modified graph and the cities removed
+    G_prime, c = removeCities(G, C)
+
+
+def removeCities(G, C):
+	start = 0
+	target = len(G.nodes())
+	minima = nx.shortest_path(G, start, target)
+
+	removedCities = []
+	G_prime = G
+
+	#Loops until C cities are deleted or the length can no longer decrease
+	while C > 0:
+		minima = nx.shortest_path(G_prime, start, target) #Current shortest distance
+		min_vertex = None #Vertex to be removed, if there is one
+		for vertex in G_prime.nodes():
+			if vertex == start or vertex == target:
+				continue
+			G_test = G_prime.remove_node(vertex) #Check if this is destructive, if so make changes
+			cur_distance = nx.shortest_path(G_test, start, target) #Find length of s-t path with a single vertex removed
+			if cur_distance < minima:
+				minima = cur_distance
+				min_vertex = vertex
+		if min_vertex == None:
+			break
+		else:
+			G_prime = G_prime.remove_node(vertex)
+			removedCities.append(min_vertex)
+
+	return G_prime, removedCities
+
 
 
 # Here's an example of how to run your solver.
