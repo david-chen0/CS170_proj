@@ -53,6 +53,7 @@ def read_input_file(path, max_size=None):
 
         return G
 
+read_input_file('30.in')
 
 def write_input_file(G, path):
     """
