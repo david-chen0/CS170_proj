@@ -23,34 +23,103 @@ def solve(G):
     #Returns the modified graph and the cities removed
     G_prime, c = removeCities(G, C)
 
+    #Returns the modified graph and the edges removed
+    G_prime, k = removeEdges(G, C, len(G.nodes()) - 1)
 
+
+#Removes up to C cities from graph G non-destructively and returns the new graph with C cities
+#removed and a list of the C cities removed
 def removeCities(G, C):
 	start = 0
-	target = len(G.nodes())
-	minima = nx.shortest_path(G, start, target)
+	target = len(G.nodes()) - 1
+	#Tracks longest shortest-path from start to target
+	maxima = nx.dijkstra_path_length(G, start, target)
 
 	removedCities = []
-	G_prime = G
+	G_prime = G.copy()
+	print('Wrote this function assuming .remove_node() is destructive, check if this is true')
 
-	#Loops until C cities are deleted or the length can no longer decrease
+	#Loops until C cities are deleted or the shortest path length can no longer be increased
 	while C > 0:
-		minima = nx.shortest_path(G_prime, start, target) #Current shortest distance
-		min_vertex = None #Vertex to be removed, if there is one
+
+		#Vertex to be removed, if there is a suitable one
+		max_vertex = None
+
 		for vertex in G_prime.nodes():
+
+			#Skips over start and target nodes so that they are not deleted
 			if vertex == start or vertex == target:
 				continue
-			G_test = G_prime.remove_node(vertex) #Check if this is destructive, if so make changes
-			cur_distance = nx.shortest_path(G_test, start, target) #Find length of s-t path with a single vertex removed
-			if cur_distance < minima:
-				minima = cur_distance
-				min_vertex = vertex
-		if min_vertex == None:
+
+			G_test = G_prime.copy()
+			G_test.remove_node(vertex)
+
+			#Find length of shortest s-t path with a single vertex removed
+			cur_distance = nx.dijkstra_path_length(G_test, start, target)
+			print('Implement something to check if start and target are still connnected')
+
+			#Sets max_vertex to current vertex if this vertex produces a better or equal result
+			if cur_distance >= maxima:
+				maxima = cur_distance
+				max_vertex = vertex
+		
+		#Adds a vertex to be removed if beneficial, otherwise breaks out of the loop
+		if max_vertex == None:
 			break
+			print('refer to ideas.txt line 12')
 		else:
-			G_prime = G_prime.remove_node(vertex)
-			removedCities.append(min_vertex)
+			G_prime.remove_node(max_vertex)
+			removedCities.append(max_vertex)
+			C -= 1
 
 	return G_prime, removedCities
+
+
+#Removes up to K edges and returns the modified graph and a list of the K edges removed
+def removeEdges(G, K, target):
+	start = 0
+
+	shortestPath = nx.shortest_path(G, start, target)
+	maxima = nx.dijkstra_path_length(G, start, target)
+
+	removedEdges = []
+	G_prime = G.copy()
+
+	#Loops until K edges are deleted or the shortest path length can no longer be increased
+	while K > 0:
+
+		#Edge to be removed
+		max_edge = None
+
+		print('Check if this is how nx shortest path method works')
+		#Only removing edges along the current shortest path can increase shortest path length
+		for edge in shortestPath:
+
+			G_test = G_prime.copy()
+			G_test.remove_edge(edge)
+
+			#Find length of shortest s-t path with a single edge removed
+			cur_distance = G_test.dijkstra_path_length(G_test, start, target)
+			print('Implement something to check if start and target are still connected')
+
+			#Sets new max_edge to current edge if current edge produces a better or equal result
+			if cur_distance >= maxima:
+				maxima = cur_distance
+				max_edge = edge
+
+		#Adds an edge to be removed if beneficial, otherwise breaks out of the loop
+		if max_edge == None:
+			break
+			print('Refer to ideas.txt line 12')
+		else:
+			G_prime.remove_edge(max_edge)
+			removedEdges.append(max_edge)
+			shortestPath = nx.shortest_path(G_prime, start, target)
+			K -= 1
+
+	return G_prime, removedEdges
+
+
 
 
 
