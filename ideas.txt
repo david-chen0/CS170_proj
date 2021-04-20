@@ -2,11 +2,14 @@ Ideas:
 
 Find most vital nodes then find most vital edges and return the value from removing those
 
-Could try a randomzied selection after where it selects a random amount of vital nodes to remove, then
-vital edges, then vital nodes, and so on until no more nodes/edges can be removed or any removal
-would have no effect on the SPT
+
+Could try a randomzied selection after where it selects a random amount of vital nodes to remove, then vital edges, then vital nodes, and so on until no more nodes/edges can be removed or any removal would have no effect on the SPT
+
 
 When removing nodes/edges, find the shortest s-t path and only try removing nodes/edges along that path, as all other nodes/edges being removed will not affect the shortest s-t path
 
 
 If shortest path length can no longer be increased between iterations, might have to randomly(or use a heuristic) choose a city/edge to delete so that the next one will decrease shortest path length. 
+
+
+Far from optimal to always remove nodes first then edges

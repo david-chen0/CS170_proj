@@ -4,6 +4,7 @@ from utils import is_valid_solution, calculate_score
 import sys
 from os.path import basename, normpath
 import glob
+import random
 
 
 def solve(G):
@@ -14,26 +15,71 @@ def solve(G):
         c: list of cities to remove
         k: list of edges to remove
     """
-    #First find the best c cities to remove(if none helpful then move on)
-    #then find best k edges to remove
+    start = 0
+    target = len(G) - 1
 
     C = 1 #Number of cities to remove
     K = 15 #Number of edges to remove
+    CK_list = [] #List of edges and cities to remove
+    numIterations = len(G) // 5 #Number of iterations for later randomization
 
-    print('refer to ideas.txt line 12')
 
-    #Returns the modified graph and the cities removed
-    G_prime, c = removeCities(G, C)
+    #All nodes then all edges strategy
+    G_prime, c0 = removeCities(G, C, target)
+    G_prime, k0 = removeEdges(G_prime, K, target)
+    CK_list.append([c0, k0])
 
-    #Returns the modified graph and the edges removed
-    G_prime, k = removeEdges(G, C, len(G) - 1)
+    #All edges then all nodes strategy
+    G_prime, k1 = removeEdges(G, K, target)
+    G_prime, c1 = removeCities(G_prime, C, target)
+    CK_list.append([c1, k1])
+
+    #Chooses cities and edges to remove randomly one at a time
+    #Probability is the probability of removing a city
+    def randomChoice(probability):
+	    G_prime = G.copy()
+	    C_prime = C
+	    K_prime = K
+	    c2, k2 = [], []
+	    while C_prime > 0 and K_prime > 0:
+	    	if random.randint(0, 100) < probability:
+	    		G_prime, lst = removeCities(G_prime, 1, target)
+	    		c2 += (lst)
+	    		C_prime -= 1
+	    	else:
+	    		G_prime, lst = removeEdges(G_prime, 1, target)
+	    		k2 += (lst)
+	    		K_prime -= 1
+	    G_prime, lst = removeCities(G_prime, C_prime, target)
+	    c2 += (lst)
+	    G_prime, lst = removeEdges(G_prime, K_prime, target)
+	    k2 += (lst)
+	    CK_list.append([c2, k2])
+
+
+	#Random choice at every step strategy
+    for __ in range(numIterations):
+    	randomChoice(50)
+
+    #Random choice favoring edges strategy
+    for __ in range(numIterations):
+    	randomChoice(20)
+
+
+    #Finds the maximal strategy and returns it
+    CK_list_evaluated = list(map(lambda lst: calculate_score(G, lst[0], lst[1]), CK_list))
+    max_index = CK_list_evaluated.index(max(CK_list_evaluated))
+    print(max_index)
+    return CK_list[max_index][0], CK_list[max_index][1]
 
 
 #Removes up to C cities from graph G non-destructively and returns the new graph with C cities
 #removed and a list of the C cities removed
-def removeCities(G, C):
+def removeCities(G, C, target):
+	if C == 0:
+		return G, []
+
 	start = 0
-	target = len(G.nodes()) - 1
 
 	shortestPath = nx.shortest_path(G, start, target)
 	maxima = nx.dijkstra_path_length(G, start, target)
@@ -73,16 +119,22 @@ def removeCities(G, C):
 		if max_vertex == None:
 			break
 			print('refer to ideas.txt line 12')
+			print('this only triggers if removing any node on the SP path disconnects s-t')
 		else:
 			G_prime.remove_node(max_vertex)
 			removedCities.append(max_vertex)
-			C -= 1
+		
+		shortestPath = nx.shortest_path(G_prime, start, target)
+		C -= 1
 
 	return G_prime, removedCities
 
 
 #Removes up to K edges and returns the modified graph and a list of the K edges removed
 def removeEdges(G, K, target):
+	if K == 0:
+		return G, []
+
 	start = 0
 
 	shortestPath = nx.shortest_path(G, start, target)
@@ -104,14 +156,14 @@ def removeEdges(G, K, target):
 		for edge in pathGraph.edges():
 
 			G_test = G_prime.copy()
-			G_test.remove_edge(edge)
+			G_test.remove_edge(edge[0], edge[1])
 
 			#Checks if start and target are still connected
 			if not nx.has_path(G_test, start, target):
 				continue
 
 			#Find length of shortest s-t path with a single edge removed
-			cur_distance = G_test.dijkstra_path_length(G_test, start, target)
+			cur_distance = nx.dijkstra_path_length(G_test, start, target)
 
 			#Sets new max_edge to current edge if current edge produces a better or equal result
 			if cur_distance >= maxima:
@@ -122,8 +174,9 @@ def removeEdges(G, K, target):
 		if max_edge == None:
 			break
 			print('Refer to ideas.txt line 12')
+			print('this only triggers if removing any edge on the SP path disconnects s-t')
 		else:
-			G_prime.remove_edge(max_edge)
+			G_prime.remove_edge(max_edge[0], max_edge[1])
 			removedEdges.append(max_edge)
 			
 		shortestPath = nx.shortest_path(G_prime, start, target)
