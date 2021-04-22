@@ -18,8 +18,15 @@ def solve(G):
     start = 0
     target = len(G) - 1
 
-    C = 1 #Number of cities to remove
-    K = 15 #Number of edges to remove
+    if len(G) >= 20 and len(G) <= 30:
+        C = 1 #Number of cities to remove
+        K = 15 #Number of edges to remove
+    elif len(G) > 30 and len(G) <= 50:
+        C = 3
+        K = 50
+    elif len(G) > 50 and len(G) <= 100:
+        C = 5
+        K = 100
     CK_list = [] #List of edges and cities to remove
     numIterations = len(G) // 5 #Number of iterations for later randomization
 
@@ -36,7 +43,7 @@ def solve(G):
 
     #Chooses cities and edges to remove randomly one at a time
     #Probability is the probability of removing a city
-    def randomChoice(probability):
+    def randomChoice(probability, skipChance = 0):
 	    G_prime = G.copy()
 	    C_prime = C
 	    K_prime = K
@@ -65,6 +72,10 @@ def solve(G):
     for __ in range(numIterations):
     	randomChoice(20)
 
+    #Random choice with a 5% chance to skip strategy
+    for __ in range(numIterations):
+    	randomChoice(50, 5)
+
 
     #Finds the maximal strategy and returns it
     CK_list_evaluated = list(map(lambda lst: calculate_score(G, lst[0], lst[1]), CK_list))
@@ -75,7 +86,7 @@ def solve(G):
 
 #Removes up to C cities from graph G non-destructively and returns the new graph with C cities
 #removed and a list of the C cities removed
-def removeCities(G, C, target):
+def removeCities(G, C, target, skipChance = 0):
 	if C == 0:
 		return G, []
 
@@ -110,16 +121,15 @@ def removeCities(G, C, target):
 			#Find length of shortest s-t path with a single vertex removed
 			cur_distance = nx.dijkstra_path_length(G_test, start, target)
 
-			#Sets max_vertex to current vertex if this vertex produces a better or equal result
-			if cur_distance >= maxima:
+			#Sets max_vertex to current vertex if this vertex produces a better result
+			#If equal result, add with probability 1 - 0.01 * skipChance
+			if cur_distance > maxima or (cur_distance == maxima and random.randint(1, 100) > skipChance):
 				maxima = cur_distance
 				max_vertex = vertex
 		
 		#Adds a vertex to be removed if beneficial, otherwise breaks out of the loop
 		if max_vertex == None:
 			break
-			print('refer to ideas.txt line 12')
-			print('this only triggers if removing any node on the SP path disconnects s-t')
 		else:
 			G_prime.remove_node(max_vertex)
 			removedCities.append(max_vertex)
@@ -131,7 +141,7 @@ def removeCities(G, C, target):
 
 
 #Removes up to K edges and returns the modified graph and a list of the K edges removed
-def removeEdges(G, K, target):
+def removeEdges(G, K, target, skipChance = 0):
 	if K == 0:
 		return G, []
 
@@ -165,16 +175,15 @@ def removeEdges(G, K, target):
 			#Find length of shortest s-t path with a single edge removed
 			cur_distance = nx.dijkstra_path_length(G_test, start, target)
 
-			#Sets new max_edge to current edge if current edge produces a better or equal result
-			if cur_distance >= maxima:
+			#Sets max_edge to current edge if this edge produces a better result
+			#If equal result, add with probability 1 - 0.01 * skipChance
+			if cur_distance > maxima or (cur_distance == maxima and random.randint(1, 100) > skipChance):
 				maxima = cur_distance
 				max_edge = edge
 
 		#Adds an edge to be removed if beneficial, otherwise breaks out of the loop
 		if max_edge == None:
 			break
-			print('Refer to ideas.txt line 12')
-			print('this only triggers if removing any edge on the SP path disconnects s-t')
 		else:
 			G_prime.remove_edge(max_edge[0], max_edge[1])
 			removedEdges.append(max_edge)
