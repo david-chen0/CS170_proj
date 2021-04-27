@@ -27,8 +27,9 @@ def solve(G):
     elif len(G) > 50 and len(G) <= 100:
         C = 5
         K = 100
+
     CK_list = [] #List of edges and cities to remove
-    numIterations = len(G) // 5 #Number of iterations for later randomization
+    numIterations = len(G) #Number of iterations for later randomization
 
 
     #All nodes then all edges strategy
@@ -43,7 +44,7 @@ def solve(G):
 
     #Chooses cities and edges to remove randomly one at a time
     #Probability is the probability of removing a city
-    def randomChoice(probability, skipChance = 0):
+    def randomChoice(probability = 50, skipChance = 0):
 	    G_prime = G.copy()
 	    C_prime = C
 	    K_prime = K
@@ -66,7 +67,7 @@ def solve(G):
 
 	#Random choice at every step strategy
     for __ in range(numIterations):
-    	randomChoice(50)
+    	randomChoice()
 
     #Random choice favoring edges strategy
     for __ in range(numIterations):
