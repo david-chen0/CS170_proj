@@ -13,3 +13,7 @@ If shortest path length can no longer be increased between iterations, might hav
 
 
 Far from optimal to always remove nodes first then edges
+
+Brute force method(project is due on 5/3): Initialize a global max. Remove every combination of nodes(that don't contain start or end) and keep a pointer in a list to that combination. For each combination, remove every combination of edges. If any combination has no possibility to reach the global max, prune it. (O((V choose c) * (E choose k)) probably takes two days to run on small inputs)
+
+Try to improve on past outputs(stops working on a problem once time limit is reached)

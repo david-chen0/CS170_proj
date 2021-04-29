@@ -116,7 +116,7 @@ def removeCities(G, C, target, skipChance = 0):
 			G_test.remove_node(vertex)
 
 			#Checks if start and target are still connected
-			if not nx.has_path(G_test, start, target):
+			if not nx.is_connected(G_test):
 				continue
 
 			#Find length of shortest s-t path with a single vertex removed
