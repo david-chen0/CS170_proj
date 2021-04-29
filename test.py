@@ -28,9 +28,9 @@ if __name__ == '__main__':
 			curScore = read_output_file(G, output_path)
 			c, k = solve(G)
 			distance = calculate_score(G, c, k)
-			if distance < curScore:
+			if distance > curScore:
 				write_output_file(G, c, k, output_path)
-			print("Finished " + location + i)
+			print("Finished " + location + str(i))
 			i += 1
 	
 

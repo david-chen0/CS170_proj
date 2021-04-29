@@ -29,7 +29,7 @@ def solve(G):
         K = 100
 
     CK_list = [] #List of edges and cities to remove
-    numIterations = len(G) #Number of iterations for later randomization
+    numIterations = 2 * len(G) #Number of iterations for later randomization
 
 
     '''
