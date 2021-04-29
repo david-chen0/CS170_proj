@@ -32,6 +32,7 @@ def solve(G):
     numIterations = len(G) #Number of iterations for later randomization
 
 
+    '''
     #All nodes then all edges strategy
     G_prime, c0 = removeCities(G, C, target)
     G_prime, k0 = removeEdges(G_prime, K, target)
@@ -40,7 +41,7 @@ def solve(G):
     #All edges then all nodes strategy
     G_prime, k1 = removeEdges(G, K, target)
     G_prime, c1 = removeCities(G_prime, C, target)
-    CK_list.append([c1, k1])
+    CK_list.append([c1, k1]) '''
 
     #Chooses cities and edges to remove randomly one at a time
     #Probability is the probability of removing a city
@@ -81,7 +82,6 @@ def solve(G):
     #Finds the maximal strategy and returns it
     CK_list_evaluated = list(map(lambda lst: calculate_score(G, lst[0], lst[1]), CK_list))
     max_index = CK_list_evaluated.index(max(CK_list_evaluated))
-    print(max_index)
     return CK_list[max_index][0], CK_list[max_index][1]
 
 
@@ -104,6 +104,7 @@ def removeCities(G, C, target, skipChance = 0):
 
 		#Vertex to be removed, if there is a suitable one
 		max_vertex = None
+		degree = 0
 
 		#Only removing nodes in the current shortest path will affect the SP length
 		for vertex in shortestPath:
@@ -124,7 +125,8 @@ def removeCities(G, C, target, skipChance = 0):
 
 			#Sets max_vertex to current vertex if this vertex produces a better result
 			#If equal result, add with probability 1 - 0.01 * skipChance
-			if cur_distance > maxima or (cur_distance == maxima and random.randint(1, 100) > skipChance):
+			cur_degree = G_prime.degree[vertex]
+			if cur_distance > maxima or (cur_distance == maxima and cur_degree >= degree and random.randint(1, 100) > skipChance):
 				maxima = cur_distance
 				max_vertex = vertex
 		
@@ -159,6 +161,7 @@ def removeEdges(G, K, target, skipChance = 0):
 
 		#Edge to be removed
 		max_edge = None
+		degree = 2 * target
 
 		#Temporary graph containing only the current shortest path
 		pathGraph = nx.path_graph(shortestPath)
@@ -178,9 +181,11 @@ def removeEdges(G, K, target, skipChance = 0):
 
 			#Sets max_edge to current edge if this edge produces a better result
 			#If equal result, add with probability 1 - 0.01 * skipChance
-			if cur_distance > maxima or (cur_distance == maxima and random.randint(1, 100) > skipChance):
+			cur_degree = G_prime.degree[edge[0]] + G_prime.degree[edge[1]]
+			if cur_distance > maxima or (cur_distance == maxima and cur_degree <= degree and random.randint(1, 100) > skipChance):
 				maxima = cur_distance
 				max_edge = edge
+				degree = cur_degree
 
 		#Adds an edge to be removed if beneficial, otherwise breaks out of the loop
 		if max_edge == None:
