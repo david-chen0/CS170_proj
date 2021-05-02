@@ -2,23 +2,17 @@
 
 This is David Chen's CS 170 Project for Spring 2021.
 
-Take a look at the project spec before you get started!
+How to run solve() on input files stored in input/:
 
-Requirements:
+  Create a pointer to the inputs(inputs = glob.glob(inputs/*)
 
-Python 3.6+
+  Mark the specific input file you want(ex: for input file at index i, file = inputs[i])
+  
+  Create the graph from the input file(G = read_input_file(file))
+  
+  Run solve on the graph(c, k = solve(G))
+  
+  Write the output file with these results to any specified output_path(write_output_file(G, c, k, output_path))
 
-You'll only need to install networkx to work with the starter code. For installation instructions, follow: https://networkx.github.io/documentation/stable/install.html
 
-If using pip to download, run `python3 -m pip install networkx`
-
-
-Files:
-- `parse.py`: functions to read/write inputs and outputs
-- `solver.py`: where you should be writing your code to solve inputs
-- `utils.py`: contains functions to compute cost and validate NetworkX graphs
-
-When writing inputs/outputs:
-- Make sure you use the functions `write_input_file` and `write_output_file` provided
-- Run the functions `read_input_file` and `read_output_file` to validate your files before submitting!
-  - These are the functions run by the autograder to validate submissions
+Take a look at test.py for examples on how to run solve() on input files and create corresponding output files.
