@@ -9,7 +9,8 @@ import os.path as path
 if __name__ == '__main__':
 	inputs = glob.glob('inputs/small/*')
 
-	locations = ['small/', 'medium/', 'large/']
+	locations = ['medium/']
+	#locations = ['small/', 'medium/', 'large/']
 
 	'''
 	G = read_input_file(inputs[1])
